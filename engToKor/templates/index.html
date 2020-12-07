@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>영어오타를 한글로!</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="icon" href="{% static 'www/favicon.ico' %}">
+</head>
+<body>
+<h3> 영어로 잘못친 내용을 입력해주세요 😉 </h3>
+<div class="form-group">
+    <form method="POST" action="/result">
+    {% csrf_token %}
+    <textarea class="form-control" id="contents_textarea" name="contents" rows="10" cols="50" placeholder="내용 입력하기 ✏"></textarea>
+    <br>
+    <button type="submit" class="btn btn-outline-secondary btn-lg btn-block">제출하기</button>
+</form>
+</div>
+</body>
+</html>

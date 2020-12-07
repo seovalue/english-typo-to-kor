@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>영어오타를 한글로!</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="icon" href="{% static 'www/favicon.ico' %}">
+    <style>
+        body{
+            margin: 0 auto;
+        }
+        span{
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <h3>  한글로 변환된 텍스트입니다 📢</h3>
+    <br>
+    <hr style="border: solid 1px #E8E3E1">
+    &nbsp; <span id="textSpan">{{ result }}</span> &nbsp;
+    <button id="copyBtn" class="btn btn-outline-secondary btn-lg">Copy</button>
+    <hr style="border: solid 1px #E8E3E1">
+    <br>
+    <h4>  오류나 개선사항은 <a href="https://github.com/seovalue">Github Issue</a>에 남겨주세요.</h4>
+</body>
+<script>
+    var copyBtn = document.getElementById("copyBtn");
+    copyBtn.addEventListener("click", function () {
+        var text = document.getElementById("textSpan").innerText;
+        var createInput = document.createElement("input");
+        createInput.setAttribute("type", "text");
+        document.getElementById("textSpan").appendChild(createInput);
+        createInput.value = text;
+        createInput.select();
+        document.execCommand('copy');
+        document.getElementById("textSpan").removeChild(createInput);
+        alert('Copied!!!!');
+    });
+</script>
+</html>
