@@ -48,7 +48,8 @@ def typo_to_kor_char(typos):
             jamo += convert_english_to_korean_special_vowels([typos[i], typos[i + 1]])
             i += 1
         elif typos[i] in stop_consonants and typos[i + 1] in check_consonants:
-            jamo += convert_english_to_korean_special_consonants([typos[i]], typos[i + 1])
+            jamo += convert_english_to_korean_special_consonants([typos[i], typos[i + 1]])
+            i += 1
         else:
             jamo += convert_english_to_korean(typos[i])
         i += 1
