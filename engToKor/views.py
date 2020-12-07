@@ -15,6 +15,10 @@ stop_vowels = ['h', 'n', 'm']
 check_vowels = ['k', 'o', 'j', 'p', 'l']
 comb_vowels = {'ㅘ': ['h', 'k'], 'ㅙ': ['h', 'o'], 'ㅝ': ['n', 'j'], 'ㅞ': ['n', 'p'], 'ㅚ': ['h', 'l'],
                'ㅟ': ['n', 'l'], 'ㅢ': ['m', 'l']}
+stop_consonants = ['r', 's', 'f', 'q']
+check_consonants = ['t', 'w', 'g', 'r', 'a', 'q', 'x', 'v', 'g']
+comb_consonants = {'ㄳ': ['r', 't'], 'ㄵ': ['s', 'w'], 'ㄶ': ['s', 'g'], 'ㄺ': ['f', 'r'], 'ㄻ': ['f', 'a'], 'ㄼ': ['f', 'q'],
+                   'ㄽ': ['f', 't'], 'ㄾ': ['f', 'x'], 'ㄿ': ['f', 'v'], 'ㅀ': ['f', 'g'], 'ㅄ': ['q', 't']}
 
 
 def index(request):
@@ -41,16 +45,24 @@ def typo_to_kor_char(typos):
     i = 0
     while i < len(typos):
         if typos[i] in stop_vowels and typos[i + 1] in check_vowels:
-            jamo += convert_english_to_korean_special([typos[i], typos[i + 1]])
+            jamo += convert_english_to_korean_special_vowels([typos[i], typos[i + 1]])
             i += 1
+        elif typos[i] in stop_consonants and typos[i + 1] in check_consonants:
+            jamo += convert_english_to_korean_special_consonants([typos[i]], typos[i + 1])
         else:
             jamo += convert_english_to_korean(typos[i])
         i += 1
     return jamo
 
 
-def convert_english_to_korean_special(word_list):
+def convert_english_to_korean_special_vowels(word_list):
     for key, value in comb_vowels.items():
+        if word_list == value:
+            return key
+
+
+def convert_english_to_korean_special_consonants(word_list):
+    for key, value in comb_consonants.items():
         if word_list == value:
             return key
 
