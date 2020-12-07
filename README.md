@@ -19,6 +19,7 @@ python manage.py runserver
 ## Contribution
 아직 미흡한 부분이 많은 프로젝트이기 때문에 Contribution을 대환영합니다 🤗  
 `Fork` -> `브랜치 생성` -> `작업 후` -> `PR` 보내주시면, 최대한 빨리 확인하고 머지할게요!  
+이슈를 개선한 `PR`은 이슈의 번호를 `commit message`에 적어주세요! (ex. `fix: issue #3 solved`)  
 현재 수정이 필요한 부분들은 [깃허브 이슈](https://github.com/seovalue/english-typo-to-kor/issues)에 적어두었는데요, 
 사용해보시고 다른 개선사항이 있다면 이슈에 남겨주세요!  
 (디자인 개선과 같은 것도 환영합니다!)
