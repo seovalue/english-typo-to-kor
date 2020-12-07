@@ -45,13 +45,18 @@ def typo_to_kor_char(typos):
     i = 0
     while i < len(typos):
         if typos[i] in stop_vowels and typos[i + 1] in check_vowels:
-            jamo += convert_english_to_korean_special_vowels([typos[i], typos[i + 1]])
-            i += 1
+            special_vowel = convert_english_to_korean_special_vowels([typos[i], typos[i + 1]])
+            if special_vowel:
+                jamo += special_vowel
+                i += 2
+                continue
         elif typos[i] in stop_consonants and typos[i + 1] in check_consonants:
-            jamo += convert_english_to_korean_special_consonants([typos[i], typos[i + 1]])
-            i += 1
-        else:
-            jamo += convert_english_to_korean(typos[i])
+            special_consonant = convert_english_to_korean_special_consonants([typos[i], typos[i + 1]])
+            if special_consonant:
+                jamo += special_consonant
+                i += 2
+                continue
+        jamo += convert_english_to_korean(typos[i])
         i += 1
     return jamo
 
@@ -60,12 +65,16 @@ def convert_english_to_korean_special_vowels(word_list):
     for key, value in comb_vowels.items():
         if word_list == value:
             return key
+    else:
+        return ''
 
 
 def convert_english_to_korean_special_consonants(word_list):
     for key, value in comb_consonants.items():
         if word_list == value:
             return key
+    else:
+        return ''
 
 
 def convert_english_to_korean(eng):
