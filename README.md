@@ -7,7 +7,7 @@
 만든 프로젝트입니다 🙂
 
 ## 프로젝트 실행 영상 보기
-[실행 영상 바로가기](https://github.com/seovalue/english-typo-to-kor/tree/main/video)
+[실행 영상 바로가기](https://github.com/seovalue/english-typo-to-kor/tree/main/video)  
 직접 실행하기: https://eng-typo-to-kor.herokuapp.com/  
 
 ## How To Run
