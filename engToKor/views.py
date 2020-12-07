@@ -51,6 +51,10 @@ def typo_to_kor_char(typos):
                 i += 2
                 continue
         elif typos[i] in stop_consonants and typos[i + 1] in check_consonants:
+            if typos[i+2] in vowels_english_upper or typos[i+2] in vowels_english_lower:
+                jamo += convert_english_to_korean(typos[i])
+                i += 1
+                continue
             special_consonant = convert_english_to_korean_special_consonants([typos[i], typos[i + 1]])
             if special_consonant:
                 jamo += special_consonant
@@ -59,7 +63,6 @@ def typo_to_kor_char(typos):
         jamo += convert_english_to_korean(typos[i])
         i += 1
     return jamo
-
 
 def convert_english_to_korean_special_vowels(word_list):
     for key, value in comb_vowels.items():
