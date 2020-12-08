@@ -23,3 +23,8 @@ python manage.py runserver
 현재 수정이 필요한 부분들은 [깃허브 이슈](https://github.com/seovalue/english-typo-to-kor/issues)에 적어두었는데요, 
 사용해보시고 다른 개선사항이 있다면 이슈에 남겨주세요!  
 (디자인 개선과 같은 것도 환영합니다!)
+
+### Contributors
+<a href="https://github.com/seovalue/english-typo-to-kor/graphs/contributors">
+  <img src="https://contributors-img.web.app/image?repo=seovalue/english-typo-to-kor" />
+</a>
