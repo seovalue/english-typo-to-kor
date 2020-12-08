@@ -1,50 +1,25 @@
 from django.shortcuts import render, redirect
 from hangul_utils import join_jamos
 import re
-   
-vowels_english_lower = ['y', 'u', 'i', 'o', 'p', 'h', 'j', 'k', 'l', 'b', 'n', 'm']
-vowels_english_upper = ['O', 'P']
 
-vowels_korean_lower = ['ㅛ', 'ㅕ', 'ㅑ', 'ㅐ', 'ㅔ', 'ㅗ', 'ㅓ', 'ㅏ', 'ㅣ', 'ㅠ', 'ㅜ', 'ㅡ']
-vowels_korean_upper = ['ㅒ', 'ㅖ']
-
+# HardCoding Values
 consonant_english_lower = ['q', 'w', 'e', 'r', 't', 'a', 's', 'd', 'f', 'g', 'z', 'x', 'c', 'v', 'b']
 consonant_english_upper = ['Q', 'W', 'E', 'R', 'T']
-
+vowels_english_lower = ['y', 'u', 'i', 'o', 'p', 'h', 'j', 'k', 'l', 'b', 'n', 'm']
+vowels_english_upper = ['O', 'P']
 consonant_korean_lower = ['ㅂ', 'ㅈ', 'ㄷ', 'ㄱ', 'ㅅ', 'ㅁ', 'ㄴ', 'ㅇ', 'ㄹ', 'ㅎ', 'ㅋ', 'ㅌ', 'ㅊ', 'ㅍ']
 consonant_korean_upper = ['ㅃ', 'ㅉ', 'ㄸ', 'ㄲ', 'ㅆ']
-
-# 사전 만들기
-def to_dict(eng_dict, kor_dict):
-    {e:k for e, k in zip(eng_dict, kor_dict)}
-
-vowels_lower_dict = to_dict(vowels_english_lower, vowels_korean_lower)
-vowels_upper_dict = to_dict(vowels_english_upper, vowels_korean_upper)
-
-consonant_lower_dict = to_dict(consonant_english_lower, consonant_korean_lower)
-consonant_upper_dict = to_dict(consonant_english_upper, consonant_korean_upper)
-
-# 사전 합치기
-eng_to_kor_dict = {**vowels_lower_dict, **vowels_upper_dict, **consonant_lower_dict, **consonant_upper_dict}
-
+vowels_korean_lower = ['ㅛ', 'ㅕ', 'ㅑ', 'ㅐ', 'ㅔ', 'ㅗ', 'ㅓ', 'ㅏ', 'ㅣ', 'ㅠ', 'ㅜ', 'ㅡ']
+vowels_korean_upper = ['ㅒ', 'ㅖ']
 stop_vowels = ['h', 'n', 'm']
 check_vowels = ['k', 'o', 'j', 'p', 'l']
-
-# tuple은 hash key로 쓸 수 있어서, 역 테이블을 만들 수 있다.
-comb_vowels = {'ㅘ': ('h', 'k'), 'ㅙ': ('h', 'o'),'ㅝ': ('n', 'j'), 'ㅞ': ('n', 'p'), 'ㅚ': ('h', 'l'), 'ㅟ': ('n', 'l'), 'ㅢ': ('m', 'l')}
-
-def get_reverse(a_dict):
-    return {value:key for key, value in a_dict.items()}
-
-re_comb_vowels = get_reverse(comb_vowels)
-
+comb_vowels = {'ㅘ': ['h', 'k'], 'ㅙ': ['h', 'o'], 'ㅝ': ['n', 'j'], 'ㅞ': ['n', 'p'], 'ㅚ': ['h', 'l'],
+               'ㅟ': ['n', 'l'], 'ㅢ': ['m', 'l']}
 stop_consonants = ['r', 's', 'f', 'q']
 check_consonants = ['t', 'w', 'g', 'r', 'a', 'q', 'x', 'v', 'g']
+comb_consonants = {'ㄳ': ['r', 't'], 'ㄵ': ['s', 'w'], 'ㄶ': ['s', 'g'], 'ㄺ': ['f', 'r'], 'ㄻ': ['f', 'a'], 'ㄼ': ['f', 'q'],
+                   'ㄽ': ['f', 't'], 'ㄾ': ['f', 'x'], 'ㄿ': ['f', 'v'], 'ㅀ': ['f', 'g'], 'ㅄ': ['q', 't']}
 
-comb_consonants = {'ㄳ': ('r', 't'), 'ㄵ': ('s', 'w'), 'ㄶ': ('s', 'g'), 'ㄺ': ('f', 'r'), 'ㄻ': ('f', 'a'), 'ㄼ': ('f', 'q'),
-                    'ㄽ': ('f', 't'), 'ㄾ': ('f', 'x'), 'ㄿ': ('f', 'v'), 'ㅀ': ('f', 'g'), 'ㅄ': ('q', 't')}
-
-re_comb_consonants = get_reverse(comb_consonants)
 
 def index(request):
     return render(request, 'index.html')
@@ -66,35 +41,61 @@ def convert(request):
 
 
 def typo_to_kor_char(typos):
-    jamo = []
+    jamo = ''
     i = 0
     while i < len(typos):
-        new, special = '', ''
         if typos[i] in stop_vowels and typos[i + 1] in check_vowels:
-            comb = (typos[i], typos[i + 1])
-            special = special_vowels(comb)
+            special_vowel = convert_english_to_korean_special_vowels([typos[i], typos[i + 1]])
+            if special_vowel:
+                jamo += special_vowel
+                i += 2
+                continue
         elif typos[i] in stop_consonants and typos[i + 1] in check_consonants:
             if typos[i+2] in vowels_english_upper or typos[i+2] in vowels_english_lower:
-                new = convert_english_to_korean(typos[i])
-            comb = (typos[i+len(new)], typos[i+len(new) + 1])
-            special = special_consonants(comb)
-        else:
-            new = convert_english_to_korean(typos[i])
-            
-        i += len(new) + len(special) * 2
-        jamo.append(new + special)
-        
-    # 문자열을 더하는 것보다 append하고 join하는 게 더 빠릅니다. 파이썬 공식 문서에서 추천하는 방법.
-    return "".join(jamo)
+                jamo += convert_english_to_korean(typos[i])
+                i += 1
+                continue
+            special_consonant = convert_english_to_korean_special_consonants([typos[i], typos[i + 1]])
+            if special_consonant:
+                jamo += special_consonant
+                i += 2
+                continue
+        jamo += convert_english_to_korean(typos[i])
+        i += 1
+    return jamo
 
-def special_vowels(word_tup):
-    return re_comb_vowels.get(word_tup, '')
+def convert_english_to_korean_special_vowels(word_list):
+    for key, value in comb_vowels.items():
+        if word_list == value:
+            return key
+    else:
+        return ''
 
-def special_consonants(word_tup):
-    return re_comb_consonants.get(word_tup, '')
+
+def convert_english_to_korean_special_consonants(word_list):
+    for key, value in comb_consonants.items():
+        if word_list == value:
+            return key
+    else:
+        return ''
+
 
 def convert_english_to_korean(eng):
-    return eng_to_kor_dict.get(eng, eng)  # key로 값을 찾아오고, 없으면 디폴트로 eng를 반환
+    if eng in consonant_english_lower:
+        index = consonant_english_lower.index(eng)
+        return consonant_korean_lower[index]
+    elif eng in consonant_english_upper:
+        index = consonant_english_upper.index(eng)
+        return consonant_korean_upper[index]
+    elif eng in vowels_english_lower:
+        index = vowels_english_lower.index(eng)
+        return vowels_korean_lower[index]
+    elif eng in vowels_english_upper:
+        index = vowels_english_upper.index(eng)
+        return vowels_korean_upper[index]
+    else:
+        return eng
+
 
 # reference: https://m.blog.naver.com/PostView.nhn?blogId=chandong83&logNo=221142971719&proxyReferer=https:%2F%2Fwww.google.com%2F
 def isHangul(text):
