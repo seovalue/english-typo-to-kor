@@ -16,7 +16,7 @@ consonant_korean_upper = ['ㅃ', 'ㅉ', 'ㄸ', 'ㄲ', 'ㅆ']
 
 # 사전 만들기
 def to_dict(eng_dict, kor_dict):
-    {e:k for e, k in zip(eng_dict, kor_dict)}
+    return {e:k for e, k in zip(eng_dict, kor_dict)}
 
 vowels_lower_dict = to_dict(vowels_english_lower, vowels_korean_lower)
 vowels_upper_dict = to_dict(vowels_english_upper, vowels_korean_upper)
