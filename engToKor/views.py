@@ -20,6 +20,7 @@ check_consonants = ['t', 'w', 'g', 'r', 'a', 'q', 'x', 'v', 'g']
 comb_consonants = {'ㄳ': ['r', 't'], 'ㄵ': ['s', 'w'], 'ㄶ': ['s', 'g'], 'ㄺ': ['f', 'r'], 'ㄻ': ['f', 'a'], 'ㄼ': ['f', 'q'],
                    'ㄽ': ['f', 't'], 'ㄾ': ['f', 'x'], 'ㄿ': ['f', 'v'], 'ㅀ': ['f', 'g'], 'ㅄ': ['q', 't']}
 
+from characters import *
 
 def index(request):
     return render(request, 'index.html')
@@ -38,7 +39,6 @@ def convert(request):
         return render(request, 'convert.html', {
             'result': result,
         })
-
 
 def typo_to_kor_char(typos):
     jamo = ''
@@ -96,6 +96,44 @@ def convert_english_to_korean(eng):
     else:
         return eng
 
+    length = len(typos)
+    typos += '  ' # 무의미한 공백을 추가해서 index에러를 차단하자.
+    
+    while i < length:
+        new, special = '', ''
+        if is_comb_vowel(typos, i):
+            special = special_vowels(comb(typos, i))
+        elif is_comb_consonant(typos, i):
+            if is_vowel(typos, i+2):
+                new = convert_english_to_korean(typos[i])
+            special = special_consonants(comb(typos, i + len(new)))
+        else:
+            new = convert_english_to_korean(typos[i])
+            
+        i += len(new) + len(special) * 2
+        jamo.append(new + special)
+    return "".join(jamo)
+
+def convert_english_to_korean(eng):
+    return eng_to_kor_dict.get(eng, eng)  # key로 값을 찾아오고, 없으면 디폴트로 eng를 반환
+    
+def special_vowels(word_tup):
+    return re_comb_vowels.get(word_tup, '')
+
+def special_consonants(word_tup):
+    return re_comb_consonants.get(word_tup, '')
+    
+def comb(typos, i):
+    return (typos[i], typos[i + 1])
+    
+def is_comb_vowel(typos, i):
+    return typos[i] in stop_vowels and typos[i + 1] in check_vowels
+
+def is_comb_consonant(typos, i):
+    return typos[i] in stop_consonants and typos[i + 1] in check_consonants
+
+def is_vowel(typos, i):
+    return typos[i] in vowels_english
 
 # reference: https://m.blog.naver.com/PostView.nhn?blogId=chandong83&logNo=221142971719&proxyReferer=https:%2F%2Fwww.google.com%2F
 def isHangul(text):
